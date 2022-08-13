@@ -72,3 +72,30 @@ class Model(nn.Module):
             prediction = self.Prediction(contextual_feature.contiguous(), text, is_train, batch_max_length=self.opt.batch_max_length)
 
         return prediction
+
+
+if __name__ == "__main__":
+    import os
+    import yaml
+    from utils import AttrDict
+    import torch
+    # import pandas as pd
+
+    def get_config(file_path):
+        with open(file_path, 'r', encoding="utf8") as stream:
+            opt = yaml.safe_load(stream)
+        opt = AttrDict(opt)
+        if opt.lang_char == 'None':
+            pass
+        else:
+            opt.character = opt.number + opt.symbol + opt.lang_char
+        os.makedirs(f'./saved_models/{opt.experiment_name}', exist_ok=True)
+        return opt
+    opt = get_config("config_files/en_filtered_config.yaml")
+    opt["num_class"] = len(opt.character)
+    print(f"num_class = {opt.num_class}")
+    model = Model(opt)
+
+    model = torch.nn.DataParallel(model)
+    # print(model.log_softmax)
+    print(model.module.Prediction)

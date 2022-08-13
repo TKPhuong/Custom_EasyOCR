@@ -17,6 +17,7 @@ from model import Model
 from test import validation
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+#モデルの総合調整可能なパラメータを計算する
 def count_parameters(model):
     print("Modules, Parameters")
     total_params = 0
@@ -29,6 +30,8 @@ def count_parameters(model):
     print(f"Total Trainable Params: {total_params}")
     return total_params
 
+#カスタムモデルを学習させるための関数
+#入力optはconfig_filesフォルダにあるyamlファイルから読み込んだハイパーパラメータの辞書
 def train(opt, show_number = 2, amp=False):
     """ dataset preparation """
     if not opt.data_filtering_off:
@@ -66,6 +69,7 @@ def train(opt, show_number = 2, amp=False):
           opt.hidden_size, opt.num_class, opt.batch_max_length, opt.Transformation, opt.FeatureExtraction,
           opt.SequenceModeling, opt.Prediction)
 
+    # 最初から学習するか、転移学習するか
     if opt.saved_model != '':
         pretrained_dict = torch.load(opt.saved_model)
         if opt.new_prediction:
@@ -73,6 +77,7 @@ def train(opt, show_number = 2, amp=False):
         
         model = torch.nn.DataParallel(model).to(device) 
         print(f'loading pretrained model from {opt.saved_model}')
+        # Do Fine-Tuning or not
         if opt.FT:
             model.load_state_dict(pretrained_dict, strict=False)
         else:
