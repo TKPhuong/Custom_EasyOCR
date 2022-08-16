@@ -14,7 +14,7 @@ import numpy as np
 from utils import CTCLabelConverter, AttnLabelConverter, Averager
 from dataset import hierarchical_dataset, AlignCollate, Batch_Balanced_Dataset
 from model import Model
-from test import validation
+from test_ import validation
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 #モデルの総合調整可能なパラメータを計算する
